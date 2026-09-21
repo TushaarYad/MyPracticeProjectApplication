@@ -1,9 +1,0 @@
-Password hashing is exactly the right instinct. But this is one of those topics where "just do it" can be dangerous,
-because there are three common wrong turns:
-
-Rolling your own crypto — never do this.
-Using SHA-256 / MD5 — these are fast hashes, which is the worst property for passwords.
-Forgetting salt — two users with the same password end up with identical hashes, which leaks information.
-
-You never need to recover a user's password. You only need to verify a password the user re-supplies later at login.
-So hashing is the correct tool. If someone ever says "we decrypt passwords to check them," they're doing it catastrophically wrong.
