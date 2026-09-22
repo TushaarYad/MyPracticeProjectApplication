@@ -32,12 +32,12 @@ Collects the stream results back into an unmodifiable List<EmployeeResponse> and
 completes the stream pipeline (introduced in Java 16 as a simpler alternative to .collect(Collectors.toList())).
 
 
-
-
-
 .from() explained
 .from is a static factory method (or custom mapping method) defined inside your
 EmployeeResponse class that takes a domain/entity object (Employee) and converts it into a Data Transfer Object (EmployeeResponse).
+
+
+Since we introduced bean validation, we can clean validation in our service
 */
 @Service
 public class EmployeeService {
@@ -55,12 +55,6 @@ public class EmployeeService {
 
     //Helper class to create a new employee or to put existing one, elimination the repeated code to build one based on type
     private Employee buildEmployee(int id, String password, EmployeePOSTRequest emp) {
-
-        //Validate first if type was specified
-        if (emp.getType() == null) {
-            throw new InvalidEmployeeException("Employee type is required");
-        }
-
 
         //Create the new employee object that will be saved in the thing
         return switch (emp.getType()) {
@@ -80,8 +74,6 @@ public class EmployeeService {
                 yield new PartTimeEmployee(id, emp.getName(), password, emp.getImage(), emp.getHourlyRate());
             }
 
-            //If for whatever reason part time or full time wasn't specified, then bruh throw a massive exception telling the cuh it ain't good
-            default -> throw new InvalidEmployeeException("type must be FULL_TIME or PART_TIME, got: " + emp.getType());
         };
 
     }
@@ -109,6 +101,11 @@ public class EmployeeService {
     //Save items in the employee hashMap
     public EmployeeGETResponse saveEmployeeService(EmployeePOSTRequest emp){
 
+        //A bug is here cuh as if we are inserting a user without checking if the latter has entered something, problem, will throw 500 error code which is not right
+        //Since @Size will treat null values as
+        if (emp.getPassword() == null || emp.getPassword().isBlank()) {
+            throw new InvalidEmployeeException("Password is required for a new employee");
+        }
         int newId = empRepo.getNextId();
         String encodedPassword = passwordEncoder.encode(emp.getPassword());
 

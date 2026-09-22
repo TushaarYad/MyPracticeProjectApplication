@@ -4,6 +4,7 @@ package com.tushaar.MyPracticeProject.controller;
 import com.tushaar.MyPracticeProject.dto.EmployeePOSTRequest;
 import com.tushaar.MyPracticeProject.dto.EmployeeGETResponse;
 import com.tushaar.MyPracticeProject.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,7 +96,7 @@ public class EmployeeController {
     //Mapping to put something in the repository
     @PostMapping("/addEmployee")
     @ResponseStatus(HttpStatus.CREATED)
-    public EmployeeGETResponse saveEmployeeController(@RequestBody EmployeePOSTRequest emp){
+    public EmployeeGETResponse saveEmployeeController(@Valid @RequestBody EmployeePOSTRequest emp){
         System.out.println("saveEmployeeController got as object: " +
                 "name " + emp.getName() +
                 ",  password " + emp.getPassword() +
@@ -109,7 +110,7 @@ public class EmployeeController {
     @PutMapping("/updateEmployee/{id}")
     public EmployeeGETResponse updateEmployeeController(
             @PathVariable int id,
-            @RequestBody EmployeePOSTRequest emp){
+            @Valid @RequestBody EmployeePOSTRequest emp){
         return empService.updateEmployeeService(id, emp);
     }
 
