@@ -1,8 +1,13 @@
 package com.tushaar.MyPracticeProject.dto;
 
 import com.tushaar.MyPracticeProject.model.EmployeeType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public class EmployeePOSTRequest {
+
+
     public String getName() {
         return name;
     }
@@ -51,11 +56,22 @@ public class EmployeePOSTRequest {
         this.hourlyRate = hourlyRate;
     }
 
+    @NotBlank(message = "Employee Name is required")
+    @Size(min=2, max=50, message = "Employee name should be between 2 and 50 characters")
     private String name;
+
+    @Size(min=2, message = "Employee password should be at least 2 characters")
     private String password;
+
+    @NotBlank(message="Image is required")
     private String image;
+
     private EmployeeType type;
+
+    @Positive(message = "Salary must be positive ")
     private Double salary;
+
+    @Positive(message = "Hourly Rate must be positive ")
     private Double hourlyRate;
 
     //Deserialize
