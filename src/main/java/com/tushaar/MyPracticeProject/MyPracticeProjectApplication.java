@@ -8,6 +8,7 @@ public class MyPracticeProjectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyPracticeProjectApplication.class, args);
+		System.out.println("MyPracticeProjectApplication started with bean validation");
 	}
 
 }
