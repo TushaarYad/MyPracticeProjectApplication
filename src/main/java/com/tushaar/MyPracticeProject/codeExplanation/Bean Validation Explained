@@ -1,0 +1,5 @@
+Bean Validation — Replace Your Manual if (x == null) throw Boilerplate
+Bean Validation is the standard way to validate incoming data in Spring.
+You annotate DTO fields with constraints like @NotBlank or @NotNull, and Spring validates the request before your controller
+method even runs. If validation fails, Spring throws MethodArgumentNotValidException, which you catch globally and return as ProblemDetail.
+
