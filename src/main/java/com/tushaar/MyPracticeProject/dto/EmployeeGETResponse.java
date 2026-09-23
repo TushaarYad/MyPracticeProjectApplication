@@ -87,7 +87,7 @@ public class EmployeeGETResponse {
             dto.salary = fte.getMonthlySalary();
         } else if (employee instanceof PartTimeEmployee pte) {
             dto.type = EmployeeType.PART_TIME;
-            dto.hourlyRate = pte.getHoursWorked();
+            dto.hourlyRate = pte.getHourlyRate();
         }
         return dto;
     }

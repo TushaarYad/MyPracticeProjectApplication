@@ -2,6 +2,7 @@ package com.tushaar.MyPracticeProject.dto;
 
 import com.tushaar.MyPracticeProject.model.EmployeeType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -66,6 +67,7 @@ public class EmployeePOSTRequest {
     @NotBlank(message="Image is required")
     private String image;
 
+    @NotNull(message = "Type is needed")
     private EmployeeType type;
 
     @Positive(message = "Salary must be positive ")
