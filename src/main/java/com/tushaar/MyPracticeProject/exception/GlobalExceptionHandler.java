@@ -162,7 +162,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 
-    //Exception to handle bad enum type
+    //Exception to handle bad enum type, HttpMessageNotReadableException is a runtime exception thrown by the Spring Framework when an incoming HTTP request body cannot be parsed or converted into the expected Java object
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ProblemDetail> handleUnreadable(HttpMessageNotReadableException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /*JPA REPOSITORY
      That's it. JpaRepository gives you:
@@ -43,5 +44,5 @@ public interface EmployeeRepo extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM PartTimeEmployee e")
     List<PartTimeEmployee> findAllPartTime ();
 
-
+    Optional<Employee> findByName(String name);
 }
