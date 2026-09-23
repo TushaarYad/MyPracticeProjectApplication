@@ -1,5 +1,10 @@
 package com.tushaar.MyPracticeProject.model;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("PART_TIME")
 public class PartTimeEmployee extends Employee {
     public double getHoursWorked() {
         return hoursWorked;
@@ -10,6 +15,8 @@ public class PartTimeEmployee extends Employee {
     }
 
     private double hoursWorked;
+
+    protected PartTimeEmployee() {}
 
     public PartTimeEmployee(int id, String name, String password, String profilePicture, double hoursWorked) {
         //Since it extends employee, it should call the constructor of the class super first and then create itself here

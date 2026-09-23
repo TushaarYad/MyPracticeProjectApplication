@@ -4,8 +4,11 @@ package com.tushaar.MyPracticeProject.model;
 // allowing you to achieve partial abstraction by mixing fully implemented methods with unimplemented ones.
 
 
+import jakarta.persistence.*;
 
-
+@Entity //marks it as a database-mapped class.
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // all employees go in one table, for my sanity and mental state
+@DiscriminatorColumn(name="employee_type", discriminatorType = DiscriminatorType.STRING) //adds a employee_type column that says which subclass each row is.
 public abstract class Employee {
 
     public void setId(int id) {
@@ -41,6 +44,7 @@ public abstract class Employee {
     }
 
     //Constructor
+    protected Employee() {} //JPA needs a no-arg constructor. Protected so my code can't call it, but Hibernate can.
     public Employee(int id, String name, String password, String profilePicture) {
         //Can use a logger to prevent info from exposing but here its fine.
         System.out.println("employee Constructor Just to let you know that the super class employee was activated with the values: ");
@@ -51,6 +55,10 @@ public abstract class Employee {
         this.profilePicture = profilePicture;
     }
 
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String password;
