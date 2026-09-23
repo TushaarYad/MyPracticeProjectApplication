@@ -196,8 +196,6 @@ public class EmployeeService {
         return base.stream().map(EmployeeGETResponse::from).toList();
     }
 
-
-
     //Delete a particular employee inside repo, place logic to check for existence first
     public void deleteEmployeeByIdRepo(int id){
         //Check if Employee exists
@@ -207,5 +205,4 @@ public class EmployeeService {
         //If the thing above didn't throw then there should be someone here
         empRepo.deleteById(id);
     }
-
 }

@@ -1,0 +1,98 @@
+JWT Authentication
+
+JWT IS a signed string with three base64-encoded parts: header (algorithm), payload (claims like subject, expiry),
+signature (HMAC or RSA of the first two). The server doesn't store sessions — it just verifies the signature on each request.
+
+Tamper with the payload → signature fails → request rejected.
+
+Our goal
+We want: only logged-in users can access the endpoints.
+The tricky part: HTTP is stateless — every request is a fresh conversation. The server doesn't remember who you are between requests.
+
+So how does the server know the second request is from the same user who logged in?
+
+Option A: Sessions - Old Way
+1. You log in. Server creates a session object in memory. Server sends back a sessionId cookie.
+2. Browser sends the cookie on every request.
+3. Server looks up the sessionId in its session store → finds your user → allows access.
+Problem: the server has to remember every logged-in user. If you have 3 servers, they all need to share the session store. Doesn't scale well.
+
+Answer B: JWT (modern way for APIs)
+1. You log in. Server creates a signed token (a JWT) containing your username. Server sends it back.
+2. Client sends the token on every request (in the Authorization header).
+3. Server verifies the signature — no lookup needed. If the signature is valid, the server trusts the claims inside.
+Advantage: server keeps no state. Any server with the same secret key can verify the token. Perfect for scaling.
+
+Example JWT: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIiwiaWF0IjoxNzI3MDAwMDAwLCJleHAiOjE3MjcwMDM2MDB9.abc123signature, hmm very long and not very gucci but it works
+                        ^                                   ^                                           ^
+                 Header: Algo used                      Payload: Claims                Signature: Proof that the server issued it
+
+The header and payload are base64-encoded, not encrypted. Anyone can decode them. Never put secrets (passwords, credit cards) inside.
+The signature is computed from header + payload + a secret key that only the server knows.
+If an attacker changes even one character in the payload, the signature no longer matches → server rejects.
+The server verifies by re-computing the signature and comparing. No database lookup needed.
+That's the magic. The server can trust the payload without storing anything.
+
+   [1] Login
+   Client ──── POST /auth/login {username, password} ───→ AuthController
+                                                              │
+                                                              ▼
+                                                        AuthService
+                                                       ┌──────────┐
+                                                       │ look up user
+                                                       │ match password
+                                                       │ generate JWT
+                                                       └──────────┘
+                                                              │
+   Client ←─────── 200 OK { token: "eyJhbG..." } ─────────────┘
+      │
+      │  (client stores token somewhere — memory, localStorage)
+      │
+   [2] Authenticated request
+   Client ──── GET /employees/allEmployees ─────────────→ JwtFilter  ←── runs on EVERY request
+              Authorization: Bearer eyJhbG...               │
+                                                            ▼
+                                                       ┌──────────┐
+                                                       │ read header
+                                                       │ validate signature
+                                                       │ extract username
+                                                       │ set security context
+                                                       └──────────┘
+                                                            │
+                                                            ▼
+                                                       Controller
+                                                       (request proceeds normally)
+
+COOL STUFF!
+
+Spring Security — the mental model
+Spring Security is a framework that wraps your app in a chain of filters. Every HTTP request passes through them in order. Each filter can:
+Look at the request
+Modify it
+Reject it (send 401/403)
+Pass it to the next filter
+By default, Spring Security blocks everything. If you add the dependency and don't configure anything, all your endpoints will return 401 Unauthorized.
+
+
+1. Browser/Postman sends:
+   GET /employees/allEmployees
+   Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIn0.xyz
+
+2. Tomcat receives the request → passes it into the Spring Security filter chain.
+
+3. Our JwtFilter runs (first, because we inserted it early):
+   a. Reads "Authorization" header → "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIn0.xyz"
+   b. Strips "Bearer " → "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2huIn0.xyz"
+   c. jwtUtil.validateToken(...) → recomputes signature → matches → true
+   d. jwtUtil.extractUsername(...) → "John"
+   e. SecurityContextHolder.getContext().setAuthentication(auth) → marks "John is authenticated"
+   f. chain.doFilter(request, response) → pass along
+
+4. Spring's remaining filters run. They see SecurityContextHolder has an authenticated user.
+   → the URL rule `.anyRequest().authenticated()` is satisfied → request proceeds.
+
+5. DispatcherServlet routes to EmployeeController.getAllEmpController().
+
+6. Controller → Service → Repo → DB → returns the list.
+
+7. Response 200 OK with JSON goes back to the client.

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /*JPA REPOSITORY
      That's it. JpaRepository gives you:
@@ -37,11 +38,11 @@ public interface EmployeeRepo extends JpaRepository<Employee, Integer> {
     List<Employee> findByNameContainingIgnoreCase(String name); //WHERE LOWER(name) LIKE '%ali%'
 
     //Since type is not in the table field, we shall query it directly
-    @Query("SELECT e FROM PartTimeEmployee e")
+    @Query("SELECT e FROM FullTimeEmployee e")
     List<FullTimeEmployee> findAllFullTime (); //WHERE employee_type = 'FULL_TIME'
 
     @Query("SELECT e FROM PartTimeEmployee e")
     List<PartTimeEmployee> findAllPartTime ();
 
-
+    Optional<Employee> findByName(String name);
 }

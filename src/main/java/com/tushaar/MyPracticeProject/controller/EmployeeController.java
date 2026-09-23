@@ -49,7 +49,12 @@ Easy to forget one endpoint.
 
 Exceptions + @ControllerAdvice centralize the behavior in one place.
 
-
+Authentication
+My map
+1. POST /auth/register  → creates an employee, returns nothing special
+2. POST /auth/login     → validates credentials, returns a JWT
+3. GET /employees/...   → requires "Authorization: Bearer <jwt>" header
+4. JwtFilter intercepts every request, validates the token, sets the security context
 
 */
 
